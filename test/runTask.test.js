@@ -25,7 +25,7 @@ test('throw if task name is not found in config', function (t) {
 test('invoke defined "process"', function (t) {
   t.plan(1);
 
-  const func = td.function('process()');
+  const func = td.function();
   td.when(func(td.matchers.anything())).thenDo(() => new Subject());
 
   const name = 'a';
