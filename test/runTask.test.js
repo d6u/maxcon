@@ -31,7 +31,6 @@ test('invoke defined "process"', function (t) {
   const name = 'a';
   const tasks = {
     a: {
-      upstreamTasks: [],
       process: func,
     }
   };
@@ -64,7 +63,7 @@ test('return result of "process"', function (t) {
   result.connect();
 });
 
-test('go though "upstreamTasks"', function (t) {
+test('walk though "upstreamTasks"', function (t) {
   t.plan(1);
 
   const funcA = td.function();

@@ -2,7 +2,7 @@ import {Observable, ConnectableObservable} from 'rx';
 
 export type RunningTask = ConnectableObservable<any>;
 
-export type UpstreamTasks = {[key: string]: Observable<any>};
+export type UpstreamTasks = {[key: string]: ConnectableObservable<any>};
 
 export interface TaskConfig {
   upstreamTasks?: string[];

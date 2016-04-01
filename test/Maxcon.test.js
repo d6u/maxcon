@@ -1,0 +1,107 @@
+'use strict';
+
+const test = require('tape');
+const td = require('testdouble');
+const Subject = require('rx').Subject;
+const BehaviorSubject = require('rx').BehaviorSubject;
+const Observable = require('rx').Observable;
+const Maxcon = require('../src/Maxcon').default;
+
+test('invoke defined "process"', function (t) {
+  t.plan(1);
+
+  const func = td.function();
+  td.when(func(td.matchers.anything())).thenDo(() => new Subject());
+
+  const config = {
+    a: {
+      process: func,
+    }
+  };
+
+  const maxcon = new Maxcon(config);
+
+  maxcon.connect();
+
+  t.doesNotThrow(() => {
+    td.verify(config.a.process({}));
+  });
+});
+
+test('connect observable returned by "process"', function (t) {
+  t.plan(1);
+
+  const config = {
+    a: {
+      process() {
+        return Observable.create(() => t.pass());
+      },
+    }
+  };
+
+  const maxcon = new Maxcon(config);
+
+  maxcon.connect();
+});
+
+test('walk though "upstreamTasks"', function (t) {
+  t.plan(1);
+
+  const funcA = td.function();
+  const funcB = td.function();
+
+  td.when(funcA(td.matchers.anything()))
+    .thenDo(() => new BehaviorSubject('objectA'));
+  td.when(funcB(td.matchers.anything()))
+    .thenDo(() => new BehaviorSubject('objectB'));
+
+  const config = {
+    a: {
+      process: funcA,
+    },
+    b: {
+      upstreamTasks: ['a'],
+      process: funcB,
+    },
+    c: {
+      upstreamTasks: ['a', 'b'],
+      process: (upstream) => Observable.zip(upstream.a, upstream.b),
+    },
+  };
+
+  const maxcon = new Maxcon(config);
+
+  maxcon.connect();
+
+  t.doesNotThrow(() => {
+    td.verify(funcA(td.matchers.anything()), {times: 1});
+    td.verify(funcB(td.matchers.anything()), {times: 1});
+  });
+});
+
+test.only('link "upstreamTasks"', function (t) {
+  t.plan(2);
+
+  const config = {
+    a: {
+      process: () => new BehaviorSubject('objectA'),
+    },
+    b: {
+      upstreamTasks: ['a'],
+      process: () => new BehaviorSubject('objectB'),
+    },
+    c: {
+      upstreamTasks: ['a', 'b'],
+      process(upstream) {
+        return Observable.zip(upstream.a, upstream.b, (a, b) => {
+          t.equal(a, 'objectA');
+          t.equal(b, 'objectB');
+        });
+      },
+    },
+  };
+
+  const maxcon = new Maxcon(config);
+
+  maxcon.connect();
+});
