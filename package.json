@@ -1,7 +1,7 @@
 {
-  "name": "dev-runner",
+  "name": "maxcon",
   "version": "1.0.0",
-  "description": "A development task runner to run dev servers and other task runners in a reactive and dependency driven manner.",
+  "description": "Run series of operations in a dependency driven, maximumly concurrent way.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/d6u/dev-runner.git"
@@ -25,7 +25,6 @@
     "tape": "^4.5.1",
     "testdouble": "^1.2.0",
     "typescript": "^1.8.9",
-    "typescript-ramda": "git://github.com/donnut/typescript-ramda.git",
     "typings": "^0.7.11"
   },
   "scripts": {
