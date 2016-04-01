@@ -1,8 +1,4 @@
 {
   "name": "dev-runner",
-  "version": false,
-  "dependencies": {},
-  "ambientDependencies": {
-    "node": "registry:dt/node#4.0.0+20160330064709"
-  }
+  "version": false
 }
