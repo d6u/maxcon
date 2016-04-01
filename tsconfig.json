@@ -6,7 +6,8 @@
     "sourceMap": true
   },
   "files": [
-    "typings/main.d.ts",
-    "lib/DevRunner.ts"
+    "node_modules/rx/ts/rx.all.es6.d.ts",
+    "lib/Maxcon.ts",
+    "lib/utils.ts"
   ]
 }

@@ -1,6 +1,6 @@
-import {Observable} from 'rx';
+import {Observable, ConnectableObservable} from 'rx';
 
-export type RunningTask = Observable<any>;
+export type RunningTask = ConnectableObservable<any>;
 
 export type UpstreamTasks = {[key: string]: Observable<any>};
 
@@ -38,7 +38,7 @@ export function runTask(
     }
   }
 
-  return taskConfig.process(upstream).share();
+  return taskConfig.process(upstream).publish();
 }
 
 export function removeTaskName(taskName: string, taskNames: string[]) {

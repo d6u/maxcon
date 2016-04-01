@@ -57,12 +57,15 @@ test('return result of "process"', function (t) {
   const remaining = [];
   const running = {};
 
-  runTask(name, tasks, remaining, running)
-    .subscribe((val) => t.equal(val, 'object'));
+  const result = runTask(name, tasks, remaining, running);
+
+  result.subscribe((val) => t.equal(val, 'object'));
+
+  result.connect();
 });
 
 test('go though "upstreamTasks"', function (t) {
-  t.plan(2);
+  t.plan(1);
 
   const funcA = td.function();
   const funcB = td.function();
@@ -89,11 +92,40 @@ test('go though "upstreamTasks"', function (t) {
   const remaining = ['a', 'b'];
   const running = {};
 
-  runTask(name, tasks, remaining, running)
-    .subscribe((val) => t.deepEqual(val, ['objectA', 'objectB']));
+  runTask(name, tasks, remaining, running);
 
   t.doesNotThrow(() => {
     td.verify(funcA(td.matchers.anything()), {times: 1});
     td.verify(funcB(td.matchers.anything()), {times: 1});
+  });
+});
+
+test('link "upstreamTasks"', function (t) {
+  t.plan(1);
+
+  const name = 'c';
+  const tasks = {
+    a: {
+      process: () => new BehaviorSubject('objectA'),
+    },
+    b: {
+      upstreamTasks: ['a'],
+      process: () => new BehaviorSubject('objectB'),
+    },
+    c: {
+      upstreamTasks: ['a', 'b'],
+      process: (upstream) => Observable.zip(upstream.a, upstream.b),
+    },
+  };
+  const remaining = ['a', 'b'];
+  const running = {};
+
+  const result = runTask(name, tasks, remaining, running);
+
+  result.subscribe((val) => t.deepEqual(val, ['objectA', 'objectB']));
+
+  result.connect();
+  Object.keys(running).forEach((key) => {
+    running[key].connect();
   });
 });
