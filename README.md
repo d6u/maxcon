@@ -2,6 +2,14 @@
 
 Run series of operations in a dependency driven, maximumly concurrent way.
 
+[![npm version](https://badge.fury.io/js/maxcon.svg)](https://badge.fury.io/js/maxcon)
+
+## Install
+
+```sh
+npm install --save maxcon
+```
+
 ## Usage
 
 ```js
