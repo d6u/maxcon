@@ -19,7 +19,7 @@ const config = {
   c: {
     // `process` will be called with observables returned from task a and b
     upstreamTasks: ['a', 'b'],
-    process: (upstream) => Observable.zip(upstream.a, upstream.b),
+    process: (upstream) => Rx.Observable.zip(upstream.a, upstream.b),
   },
 };
 
