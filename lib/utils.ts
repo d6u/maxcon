@@ -14,12 +14,20 @@ export interface DevRunnerConfig {
 }
 
 export function runTask(
+  taskConfigs: DevRunnerConfig,
   taskName: string,
-  tasks: DevRunnerConfig,
   remainingTaskNames: string[],
-  runningTasks: {[key: string]: RunningTask}): RunningTask {
+  topologicalOrderedTasks: string[],
+  runningTasks: {[key: string]: RunningTask},
+  parentTaskNames: string[]) {
 
-  const taskConfig = tasks[taskName];
+  if (parentTaskNames.indexOf(taskName) !== -1) {
+    throw new Error(`Circular dependency is detected among ${taskName} and ${parentTaskNames.join(', ')}`);
+  }
+
+  parentTaskNames.push(taskName);
+
+  const taskConfig = taskConfigs[taskName];
 
   if (!taskConfig) {
     throw new Error(`Task configuration for ${taskName} is not found`);
@@ -27,18 +35,28 @@ export function runTask(
 
   const upstream: UpstreamTasks = {};
 
-  for (const upstreamTaskName of (taskConfig.upstreamTasks || [])) {
-    if (runningTasks[upstreamTaskName]) {
-      upstream[upstreamTaskName] = runningTasks[upstreamTaskName];
-    } else {
-      removeTaskName(upstreamTaskName, remainingTaskNames);
-      const upstreamRunningTask = runTask(upstreamTaskName, tasks, remainingTaskNames, runningTasks);
-      upstream[upstreamTaskName] = upstreamRunningTask;
-      runningTasks[upstreamTaskName] = upstreamRunningTask;
+  if (taskConfig.upstreamTasks) {
+    for (const upstreamTaskName of taskConfig.upstreamTasks) {
+      if (runningTasks[upstreamTaskName]) {
+        upstream[upstreamTaskName] = runningTasks[upstreamTaskName];
+      } else {
+        removeTaskName(upstreamTaskName, remainingTaskNames);
+        runTask(
+          taskConfigs,
+          upstreamTaskName,
+          remainingTaskNames,
+          topologicalOrderedTasks,
+          runningTasks,
+          parentTaskNames
+        );
+        upstream[upstreamTaskName] = runningTasks[upstreamTaskName];
+      }
     }
   }
 
-  return taskConfig.process(upstream).publish();
+  topologicalOrderedTasks.push(taskName);
+
+  runningTasks[taskName] = taskConfig.process(upstream).publish();
 }
 
 export function removeTaskName(taskName: string, taskNames: string[]) {

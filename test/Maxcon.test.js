@@ -7,7 +7,7 @@ const BehaviorSubject = require('rx').BehaviorSubject;
 const Observable = require('rx').Observable;
 const Maxcon = require('../src/Maxcon').default;
 
-test('invoke defined "process"', function (t) {
+test('"connect" invokes defined "process"', function (t) {
   t.plan(1);
 
   const func = td.function();
@@ -28,14 +28,12 @@ test('invoke defined "process"', function (t) {
   });
 });
 
-test('connect observable returned by "process"', function (t) {
+test('"connect" connects observable returned by "process"', function (t) {
   t.plan(1);
 
   const config = {
     a: {
-      process() {
-        return Observable.create(() => t.pass());
-      },
+      process: () => Observable.create(() => t.pass())
     }
   };
 
@@ -44,7 +42,7 @@ test('connect observable returned by "process"', function (t) {
   maxcon.connect();
 });
 
-test('walk though "upstreamTasks"', function (t) {
+test('"connect" walks though "upstreamTasks"', function (t) {
   t.plan(1);
 
   const funcA = td.function();
@@ -79,7 +77,7 @@ test('walk though "upstreamTasks"', function (t) {
   });
 });
 
-test.only('link "upstreamTasks"', function (t) {
+test('"connect" links "upstreamTasks"', function (t) {
   t.plan(2);
 
   const config = {

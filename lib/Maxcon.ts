@@ -11,16 +11,26 @@ export default class Maxcon {
     this.dispose();
 
     const remainingTaskNames = Object.keys(this.tasks);
+
+    // Tasks being depended will have lower index
+    const topologicalOrderedTasks: string[] = [];
+
     while (remainingTaskNames.length) {
       const taskName = remainingTaskNames.shift();
-      this.runningTasks[taskName] =
-        runTask(taskName, this.tasks, remainingTaskNames, this.runningTasks);
+      runTask(
+        this.tasks,
+        taskName,
+        remainingTaskNames,
+        topologicalOrderedTasks,
+        this.runningTasks,
+        []
+      );
     }
 
     this.disposableBag = new CompositeDisposable();
 
-    Object.keys(this.runningTasks).forEach((key) => {
-      this.disposableBag.add(this.runningTasks[key].connect());
+    topologicalOrderedTasks.reverse().forEach((taskName) => {
+      this.disposableBag.add(this.runningTasks[taskName].connect());
     });
   }
 

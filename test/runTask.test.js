@@ -7,16 +7,35 @@ const Subject = require('rx').Subject;
 const Observable = require('rx').Observable;
 const runTask = require('../src/utils').runTask;
 
+test('throw if there is circular dependency', function (t) {
+  t.plan(1);
+
+  const tasks = {};
+  const name = 'a';
+  const remaining = [];
+  const sorted = ['a'];
+  const running = {};
+  const parents = [];
+
+  function run() {
+    runTask(tasks, name, remaining, sorted, running, parents);
+  }
+
+  t.throws(run);
+});
+
 test('throw if task name is not found in config', function (t) {
   t.plan(1);
 
-  const name = 'a';
   const tasks = {};
+  const name = 'a';
   const remaining = [];
+  const sorted = [];
   const running = {};
+  const parents = [];
 
   function run() {
-    runTask(name, tasks, remaining, running);
+    runTask(tasks, name, remaining, sorted, running, parents);
   }
 
   t.throws(run);
@@ -28,16 +47,18 @@ test('invoke defined "process"', function (t) {
   const func = td.function();
   td.when(func(td.matchers.anything())).thenDo(() => new Subject());
 
-  const name = 'a';
   const tasks = {
     a: {
       process: func,
     }
   };
+  const name = 'a';
   const remaining = [];
+  const sorted = [];
   const running = {};
+  const parents = [];
 
-  runTask(name, tasks, remaining, running);
+  runTask(tasks, name, remaining, sorted, running, parents);
 
   t.doesNotThrow(() => {
     td.verify(tasks.a.process({}));
@@ -47,20 +68,22 @@ test('invoke defined "process"', function (t) {
 test('return result of "process"', function (t) {
   t.plan(1);
 
-  const name = 'a';
   const tasks = {
     a: {
       process: () => new BehaviorSubject('object'),
     }
   };
+  const name = 'a';
   const remaining = [];
+  const sorted = [];
   const running = {};
+  const parents = [];
 
-  const result = runTask(name, tasks, remaining, running);
+  runTask(tasks, name, remaining, sorted, running, parents);
 
-  result.subscribe((val) => t.equal(val, 'object'));
+  running.a.subscribe((val) => t.equal(val, 'object'));
 
-  result.connect();
+  running.a.connect();
 });
 
 test('walk though "upstreamTasks"', function (t) {
@@ -74,7 +97,6 @@ test('walk though "upstreamTasks"', function (t) {
   td.when(funcB(td.matchers.anything()))
     .thenDo(() => new BehaviorSubject('objectB'));
 
-  const name = 'c';
   const tasks = {
     a: {
       process: funcA,
@@ -88,10 +110,13 @@ test('walk though "upstreamTasks"', function (t) {
       process: (upstream) => Observable.zip(upstream.a, upstream.b),
     },
   };
+  const name = 'c';
   const remaining = ['a', 'b'];
+  const sorted = [];
   const running = {};
+  const parents = [];
 
-  runTask(name, tasks, remaining, running);
+  runTask(tasks, name, remaining, sorted, running, parents);
 
   t.doesNotThrow(() => {
     td.verify(funcA(td.matchers.anything()), {times: 1});
@@ -102,7 +127,6 @@ test('walk though "upstreamTasks"', function (t) {
 test('link "upstreamTasks"', function (t) {
   t.plan(1);
 
-  const name = 'c';
   const tasks = {
     a: {
       process: () => new BehaviorSubject('objectA'),
@@ -116,15 +140,15 @@ test('link "upstreamTasks"', function (t) {
       process: (upstream) => Observable.zip(upstream.a, upstream.b),
     },
   };
+  const name = 'c';
   const remaining = ['a', 'b'];
+  const sorted = [];
   const running = {};
+  const parents = [];
 
-  const result = runTask(name, tasks, remaining, running);
+  runTask(tasks, name, remaining, sorted, running, parents);
 
-  result.subscribe((val) => t.deepEqual(val, ['objectA', 'objectB']));
+  running.c.subscribe((val) => t.deepEqual(val, ['objectA', 'objectB']));
 
-  result.connect();
-  Object.keys(running).forEach((key) => {
-    running[key].connect();
-  });
+  sorted.reverse().forEach((name) => running[name].connect());
 });
