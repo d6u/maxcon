@@ -42,7 +42,7 @@ test('"connect" connects observable returned by "process"', function (t) {
   maxcon.connect();
 });
 
-test('"connect" walks though "upstreamTasks"', function (t) {
+test('"connect" walks though "dependsOn" tasks', function (t) {
   t.plan(1);
 
   const funcA = td.function();
@@ -58,11 +58,11 @@ test('"connect" walks though "upstreamTasks"', function (t) {
       process: funcA,
     },
     b: {
-      upstreamTasks: ['a'],
+      dependsOn: ['a'],
       process: funcB,
     },
     c: {
-      upstreamTasks: ['a', 'b'],
+      dependsOn: ['a', 'b'],
       process: (upstream) => Observable.zip(upstream.a, upstream.b),
     },
   };
@@ -77,7 +77,7 @@ test('"connect" walks though "upstreamTasks"', function (t) {
   });
 });
 
-test('"connect" links "upstreamTasks"', function (t) {
+test('"connect" links "dependsOn" tasks', function (t) {
   t.plan(2);
 
   const config = {
@@ -85,11 +85,11 @@ test('"connect" links "upstreamTasks"', function (t) {
       process: () => new BehaviorSubject('objectA'),
     },
     b: {
-      upstreamTasks: ['a'],
+      dependsOn: ['a'],
       process: () => new BehaviorSubject('objectB'),
     },
     c: {
-      upstreamTasks: ['a', 'b'],
+      dependsOn: ['a', 'b'],
       process(upstream) {
         return Observable.zip(upstream.a, upstream.b, (a, b) => {
           t.equal(a, 'objectA');

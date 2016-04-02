@@ -86,7 +86,7 @@ test('return result of "process"', function (t) {
   running.a.connect();
 });
 
-test('walk though "upstreamTasks"', function (t) {
+test('walk though "dependsOn" tasks', function (t) {
   t.plan(1);
 
   const funcA = td.function();
@@ -102,11 +102,11 @@ test('walk though "upstreamTasks"', function (t) {
       process: funcA,
     },
     b: {
-      upstreamTasks: ['a'],
+      dependsOn: ['a'],
       process: funcB,
     },
     c: {
-      upstreamTasks: ['a', 'b'],
+      dependsOn: ['a', 'b'],
       process: (upstream) => Observable.zip(upstream.a, upstream.b),
     },
   };
@@ -124,7 +124,7 @@ test('walk though "upstreamTasks"', function (t) {
   });
 });
 
-test('link "upstreamTasks"', function (t) {
+test('link "dependsOn" tasks', function (t) {
   t.plan(1);
 
   const tasks = {
@@ -132,11 +132,11 @@ test('link "upstreamTasks"', function (t) {
       process: () => new BehaviorSubject('objectA'),
     },
     b: {
-      upstreamTasks: ['a'],
+      dependsOn: ['a'],
       process: () => new BehaviorSubject('objectB'),
     },
     c: {
-      upstreamTasks: ['a', 'b'],
+      dependsOn: ['a', 'b'],
       process: (upstream) => Observable.zip(upstream.a, upstream.b),
     },
   };

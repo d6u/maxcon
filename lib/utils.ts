@@ -5,7 +5,7 @@ export type RunningTask = ConnectableObservable<any>;
 export type UpstreamTasks = {[key: string]: ConnectableObservable<any>};
 
 export interface TaskConfig {
-  upstreamTasks?: string[];
+  dependsOn?: string[];
   process: (upstream: UpstreamTasks) => Observable<any>;
 }
 
@@ -35,8 +35,8 @@ export function runTask(
 
   const upstream: UpstreamTasks = {};
 
-  if (taskConfig.upstreamTasks) {
-    for (const upstreamTaskName of taskConfig.upstreamTasks) {
+  if (taskConfig.dependsOn) {
+    for (const upstreamTaskName of taskConfig.dependsOn) {
       if (runningTasks[upstreamTaskName]) {
         upstream[upstreamTaskName] = runningTasks[upstreamTaskName];
       } else {
