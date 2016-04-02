@@ -6,21 +6,29 @@
     "type": "git",
     "url": "git+https://github.com/d6u/dev-runner.git"
   },
-  "keywords": [],
+  "keywords": [
+    "dependency",
+    "observable"
+  ],
   "author": "Daiwei Lu <daiweilu123@gmail.com> (http://daiwei.lu/)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/d6u/dev-runner/issues"
   },
   "homepage": "https://github.com/d6u/dev-runner#readme",
-  "main": "index.js",
-  "dependencies": {
+  "main": "src/index.js",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "peerDependencies": {
     "rx": "^4.1.0"
   },
   "devDependencies": {
     "babel-cli": "^6.6.5",
     "babel-core": "^6.7.4",
     "babel-preset-es2015-node4": "^2.1.0",
+    "rx": "^4.1.0",
     "tap-spec": "^4.1.1",
     "tape": "^4.5.1",
     "testdouble": "^1.2.0",
