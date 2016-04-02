@@ -35,8 +35,12 @@
     "typescript": "^1.8.9"
   },
   "scripts": {
+    "clean": "rm -rfv src && rm -vf lib/Maxcon*js* lib/utils*js*",
     "pretest": "npm run build",
     "test": "node test/index.js | tap-spec",
-    "build": "tsc && babel --presets es2015-node4 --out-dir ./src ./lib"
+    "build": "tsc && babel --presets es2015-node4 --out-dir ./src ./lib",
+    "preversion": "npm test",
+    "postversion": "git push && git push --tags",
+    "prepublish": "npm run clean && npm run build"
   }
 }
