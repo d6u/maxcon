@@ -17,8 +17,6 @@ const Rx = require('rx');
 
 const config = {
   a: {
-    // Observable returned will be converted into ConnectableObservable,
-    // by invoking `publish` method
     process: () => Rx.Observable.just('value a'),
   },
   b: {
@@ -33,7 +31,11 @@ const config = {
 
 const maxcon = new Maxcon(config);
 
-// Calling connect invokes `connect` method on all observables 
-// returned by `process` functions
+// Calling `connect` will do three things:
+// 1. invoke all `process` functions once.
+// 2. invoke `share` method of observables returned from `process` functions.
+// 3. observables that are not depended on (no downstream) will be merged
+//    and converted to a ConnectableObservable (by calling `publish`) and
+//    then connected (by calling `connect`).
 maxcon.connect();
 ```
