@@ -1,6 +1,6 @@
 {
   "name": "maxcon",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Run series of operations in a dependency driven, maximumly concurrent way.",
   "repository": {
     "type": "git",
