@@ -2,7 +2,9 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es5",
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "outDir": "lib",
+    "sourceMap": true
   },
   "files": [
     "typings/main.d.ts",

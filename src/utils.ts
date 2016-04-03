@@ -1,8 +1,11 @@
-import {Observable, ConnectableObservable} from 'rx';
+import {Observable} from 'rx';
 
-export type RunningTask = ConnectableObservable<any>;
+export interface RunningTask {
+  observable: Observable<any>;
+  childCount: number;
+}
 
-export type UpstreamTasks = {[key: string]: ConnectableObservable<any>};
+export type UpstreamTasks = {[key: string]: Observable<any>};
 
 export interface TaskConfig {
   dependsOn?: string[];
@@ -17,7 +20,6 @@ export function runTask(
   taskConfigs: DevRunnerConfig,
   taskName: string,
   remainingTaskNames: string[],
-  topologicalOrderedTasks: string[],
   runningTasks: {[key: string]: RunningTask},
   parentTaskNames: string[]) {
 
@@ -38,25 +40,27 @@ export function runTask(
   if (taskConfig.dependsOn) {
     for (const upstreamTaskName of taskConfig.dependsOn) {
       if (runningTasks[upstreamTaskName]) {
-        upstream[upstreamTaskName] = runningTasks[upstreamTaskName];
+        upstream[upstreamTaskName] = runningTasks[upstreamTaskName].observable;
+        runningTasks[upstreamTaskName].childCount += 1;
       } else {
         removeTaskName(upstreamTaskName, remainingTaskNames);
         runTask(
           taskConfigs,
           upstreamTaskName,
           remainingTaskNames,
-          topologicalOrderedTasks,
           runningTasks,
           parentTaskNames
         );
-        upstream[upstreamTaskName] = runningTasks[upstreamTaskName];
+        upstream[upstreamTaskName] = runningTasks[upstreamTaskName].observable;
+        runningTasks[upstreamTaskName].childCount += 1;
       }
     }
   }
 
-  topologicalOrderedTasks.push(taskName);
-
-  runningTasks[taskName] = taskConfig.process(upstream).publish();
+  runningTasks[taskName] = {
+    observable: taskConfig.process(upstream).share(),
+    childCount: 0,
+  };
 }
 
 export function removeTaskName(taskName: string, taskNames: string[]) {

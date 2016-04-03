@@ -36,9 +36,9 @@
     "clean": "rm -rfv lib",
     "pretest": "npm run build",
     "test": "node test/index.js | tap-spec",
-    "build": "tsc --outDir ./lib --sourceMap",
+    "build": "tsc",
     "preversion": "npm test",
     "postversion": "git push && git push --tags",
-    "prepublish": "npm run clean && npm run build"
+    "prepublish": "typings install && npm run clean && npm run build"
   }
 }
