@@ -32,9 +32,5 @@ node_modules
 # Optional REPL history
 .node_repl_history
 
-/lib/*.js
-/lib/*.js.map
-!/lib/index.js
-/src
-/typings/browser*
-/typings/main
+/lib
+/typings

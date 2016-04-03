@@ -16,29 +16,27 @@
     "url": "https://github.com/d6u/dev-runner/issues"
   },
   "homepage": "https://github.com/d6u/dev-runner#readme",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "files": [
     "lib",
     "src"
   ],
   "peerDependencies": {
-    "rx": "^4.1.0"
+    "rx": "^4.0.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.6.5",
-    "babel-core": "^6.7.4",
-    "babel-preset-es2015-node4": "^2.1.0",
     "rx": "^4.1.0",
     "tap-spec": "^4.1.1",
     "tape": "^4.5.1",
     "testdouble": "^1.2.0",
-    "typescript": "^1.8.9"
+    "typescript": "^1.8.9",
+    "typings": "^0.7.11"
   },
   "scripts": {
-    "clean": "rm -rfv src && rm -vf lib/Maxcon*js* lib/utils*js*",
+    "clean": "rm -rfv lib",
     "pretest": "npm run build",
     "test": "node test/index.js | tap-spec",
-    "build": "tsc && babel --presets es2015-node4 --out-dir ./src ./lib",
+    "build": "tsc --outDir ./lib --sourceMap",
     "preversion": "npm test",
     "postversion": "git push && git push --tags",
     "prepublish": "npm run clean && npm run build"

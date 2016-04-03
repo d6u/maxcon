@@ -1,7 +1,7 @@
 'use strict';
 
 const test = require('tape');
-const removeTaskName = require('../src/utils').removeTaskName;
+const removeTaskName = require('../lib/utils').removeTaskName;
 
 test('remove name from an array', function (t) {
   t.plan(1);

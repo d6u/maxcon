@@ -5,7 +5,7 @@ const td = require('testdouble');
 const BehaviorSubject = require('rx').BehaviorSubject;
 const Subject = require('rx').Subject;
 const Observable = require('rx').Observable;
-const runTask = require('../src/utils').runTask;
+const runTask = require('../lib/utils').runTask;
 
 test('throw if there is circular dependency', function (t) {
   t.plan(1);
