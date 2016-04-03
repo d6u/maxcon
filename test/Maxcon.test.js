@@ -103,3 +103,39 @@ test('"connect" links "dependsOn" tasks', function (t) {
 
   maxcon.connect();
 });
+
+test('"connect" only subscribes to tasks were not depended on', function (t) {
+  t.plan(1);
+
+  const funcA = td.function();
+  const funcB = td.function();
+  const funcC = td.function();
+  const funcD = td.function();
+
+  const config = {
+    a: {
+      process: () => new BehaviorSubject('objectA').doOnNext(funcA),
+    },
+    b: {
+      process: () => new BehaviorSubject('objectB').doOnNext(funcB),
+    },
+    c: {
+      dependsOn: ['a', 'b'],
+      process: (upstream) => new BehaviorSubject('objectC').doOnNext(funcC),
+    },
+    d: {
+      process: () => new BehaviorSubject('objectD').doOnNext(funcD),
+    }
+  };
+
+  const maxcon = new Maxcon(config);
+
+  maxcon.connect();
+
+  t.doesNotThrow(() => {
+    td.verify(funcA(td.matchers.anything()), {times: 0, ignoreExtraArgs: true});
+    td.verify(funcB(td.matchers.anything()), {times: 0, ignoreExtraArgs: true});
+    td.verify(funcC(td.matchers.anything()), {times: 1});
+    td.verify(funcD(td.matchers.anything()), {times: 1});
+  });
+});
