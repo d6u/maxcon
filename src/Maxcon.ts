@@ -7,7 +7,7 @@ export default class Maxcon {
 
   constructor(private tasks: DevRunnerConfig) {}
 
-  connect() {
+  connect(done?: (err?: Error) => void) {
     this.dispose();
 
     const remainingTaskNames = Object.keys(this.tasks);
@@ -28,8 +28,22 @@ export default class Maxcon {
       .filter((task) => task.childCount === 0)
       .map((task) => task.observable);
 
-    this.disposable =
-      Observable.merge.apply(null, endingTasks).publish().connect();
+    let hasError = false;
+
+    this.disposable = Observable.merge.apply(null, endingTasks)
+      .subscribe(
+        undefined,
+        (err: Error) => {
+          hasError = true;
+          if (done) {
+            done(err);
+          }
+        },
+        () => {
+          if (!hasError && done) {
+            done();
+          }
+        });
   }
 
   dispose() {

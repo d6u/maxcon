@@ -139,3 +139,35 @@ test('"connect" only subscribes to tasks were not depended on', function (t) {
     td.verify(funcD(td.matchers.anything()), {times: 1});
   });
 });
+
+test('if provided a callback to "connect" and tasks throws, callback will be called with an error', function (t) {
+  t.plan(1);
+
+  const config = {
+    a: {
+      process: () => Observable.throw(new Error('test error')),
+    }
+  };
+
+  const maxcon = new Maxcon(config);
+
+  maxcon.connect((err) => {
+    t.equal(err.message, 'test error');
+  });
+});
+
+test('if provided a callback to "connect", callback will be called on completed', function (t) {
+  t.plan(1);
+
+  const config = {
+    a: {
+      process: () => Observable.just('some value'),
+    }
+  };
+
+  const maxcon = new Maxcon(config);
+
+  maxcon.connect((err) => {
+    t.notOk(err);
+  });
+});
