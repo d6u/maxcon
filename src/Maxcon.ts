@@ -1,11 +1,11 @@
 import {Observable, Disposable} from 'rx';
-import {RunningTask, DevRunnerConfig, runTask} from './utils';
+import {RunningTask, MaxconTaskConfig, runTask} from './utils';
 
 export default class Maxcon {
   private runningTasks: {[key: string]: RunningTask} = {};
   private disposable: Disposable;
 
-  constructor(private tasks: DevRunnerConfig) {}
+  constructor(private tasks: MaxconTaskConfig) {}
 
   connect(done?: (err?: Error) => void) {
     this.dispose();

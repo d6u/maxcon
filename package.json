@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/d6u/dev-runner#readme",
   "main": "lib/index.js",
-  "typings": "lib/Maxcon.d.ts",
+  "typings": "lib/index.d.ts",
   "files": [
     "lib",
     "src"

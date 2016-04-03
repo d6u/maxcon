@@ -12,12 +12,12 @@ export interface TaskConfig {
   process: (upstream: UpstreamTasks) => Observable<any>;
 }
 
-export interface DevRunnerConfig {
+export interface MaxconTaskConfig {
   [key: string]: TaskConfig;
 }
 
 export function runTask(
-  taskConfigs: DevRunnerConfig,
+  taskConfigs: MaxconTaskConfig,
   taskName: string,
   remainingTaskNames: string[],
   runningTasks: {[key: string]: RunningTask},
