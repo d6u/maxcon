@@ -5,7 +5,7 @@ const td = require('testdouble');
 const Subject = require('rx').Subject;
 const BehaviorSubject = require('rx').BehaviorSubject;
 const Observable = require('rx').Observable;
-const Maxcon = require('../lib');
+const Maxcon = require('../lib').Maxcon;
 
 test('"connect" invokes defined "process"', function (t) {
   t.plan(1);
