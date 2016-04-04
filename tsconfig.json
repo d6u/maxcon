@@ -1,11 +1,15 @@
 {
+  "compileOnSave": false,
   "compilerOptions": {
+    "moduleResolution": "node",
     "module": "commonjs",
     "target": "es5",
     "noImplicitAny": true,
     "outDir": "lib",
     "sourceMap": true,
-    "declaration": true
+    "declaration": true,
+    "listFiles": true,
+    "pretty": true
   },
   "files": [
     "typings/main.d.ts",
